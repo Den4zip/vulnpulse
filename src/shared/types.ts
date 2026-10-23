@@ -1,61 +1,28 @@
-import type { Severity, VulnStatus } from './enums'
+import type { InferInsertModel } from 'drizzle-orm'
+import type {
+  feeds,
+  vulnerabilities,
+  stack,
+  matches,
+  notes,
+  sla
+} from '../main/db/schema'
 
-export type FeedName = 'nvd' | 'osv' | 'cisa' | 'fstec'
+export type { FeedName, StackKind } from './enums'
 
-export type StackKind = 'application' | 'system' | 'package'
+export type FeedInfo = InferInsertModel<typeof feeds>
 
-export interface FeedInfo {
-  id?: number
-  name: FeedName
-  source: string
-  etag: string | null
-  lastStartedAt: string | null
-  lastFinishedAt: string | null
-  lastError: string | null
-}
+export type Vulnerability = Omit<
+  InferInsertModel<typeof vulnerabilities>,
+  'rawJson' | 'createdAt'
+>
 
-export interface Vulnerability {
-  id?: number
-  extId: string
-  feedId: number
-  title: string | null
-  description: string | null
-  severity: Severity | null
-  cvssScore: number | null
-  cvssVector: string | null
-  status: VulnStatus
-  isKnownExploited: boolean
-  publishedAt: string | null
-  modifiedAt: string | null
-}
+export type StackItem = Omit<InferInsertModel<typeof stack>, 'createdAt' | 'updatedAt'>
 
-export interface StackItem {
-  id?: number
-  kind: StackKind
-  name: string
-  vendor: string | null
-  product: string
-  version: string | null
-  cpe23: string | null
-  purl: string | null
-}
-
-export interface MatchRecord {
-  id?: number
-  vulnerabilityId: number
-  stackId: number
+export type MatchRecord = Omit<InferInsertModel<typeof matches>, 'createdAt'> & {
   confidence: number
 }
 
-export interface Note {
-  id?: number
-  vulnerabilityId: number
-  body: string
-}
+export type Note = Omit<InferInsertModel<typeof notes>, 'createdAt'>
 
-export interface SlaRecord {
-  id?: number
-  vulnerabilityId: number
-  dueAt: string
-  patchedAt: string | null
-}
+export type SlaRecord = InferInsertModel<typeof sla>

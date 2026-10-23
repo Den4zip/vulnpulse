@@ -6,7 +6,7 @@
 
 - **Платформа:** Electron (TypeScript) с разделением процессов Main / Preload / Renderer, `contextIsolation: true`, `nodeIntegration: false`
 - **Frontend:** React, TailwindCSS, lucide-react, shadcn/ui, Recharts, Zustand
-- **БД:** SQLite через встроенный `node:sqlite` (`DatabaseSync`), без ORM, с обязательными миграциями
+- **БД:** SQLite через встроенный `node:sqlite` (`DatabaseSync`), поверх — Drizzle ORM, миграции из схемы через drizzle-kit
 - **Сеть/парсинг:** axios, `fast-xml-parser` (XML ФСТЭК), `cheerio` (резервный HTML)
 - **Фон:** node-cron в Main Process
 - **Тесты:** Vitest (unit), Playwright (E2E)
@@ -17,7 +17,7 @@
 | Этап | Содержание | Статус |
 |------|------------|--------|
 | 1 | Скелет: electron-vite, окна с `contextIsolation`, настройка Vitest/Playwright | Выполнен |
-| 2 | Общие типы (`shared/`) + БД: миграции, раннер, `node:sqlite` | Выполнен |
+| 2 | Общие типы (`shared/`) + БД: `node:sqlite` под Drizzle ORM (drizzle-kit миграции, раннер) | Выполнен |
 | 3 | Matcher: CPE 2.3, PURL, сравнение версий, нормализатор, движок матчинга | Выполнен |
 | 4 | Feed-адаптеры: CISA KEV, NVD, OSV, ФСТЭК, единый httpclient | В работе (следующий) |
 | 5 | Планировщик: node-cron поверх адаптеров | Не начат |

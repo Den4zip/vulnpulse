@@ -13,9 +13,11 @@
     "typecheck": "npm run typecheck:node && npm run typecheck:web",
     "test": "vitest run",
     "test:watch": "vitest",
-    "e2e": "playwright test"
+    "e2e": "playwright test",
+    "db:generate": "drizzle-kit generate"
   },
   "dependencies": {
+    "drizzle-orm": "^1.0.0-rc.5",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "semver": "^7.8.5"
@@ -29,7 +31,8 @@
     "@types/semver": "^7.8.0",
     "@vitejs/plugin-react": "^5.0.0",
     "@vitest/coverage-v8": "^4.1.12",
-    "electron": "^40.0.0",
+    "drizzle-kit": "^1.0.0-rc.5",
+    "electron": "^45.0.0",
     "electron-vite": "^4.0.0",
     "tailwindcss": "^4.1.0",
     "typescript": "^5.9.0",
@@ -37,7 +40,7 @@
     "vitest": "^4.0.0"
   },
   "allowScripts": {
-    "electron@40.10.6": true,
+    "electron@45.0.0": true,
     "esbuild@0.25.12": true,
     "esbuild@0.28.2": true
   }

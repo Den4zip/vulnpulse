@@ -14,3 +14,7 @@ export enum Severity {
   Low = 'Low',
   None = 'None'
 }
+
+export type FeedName = 'nvd' | 'osv' | 'cisa' | 'fstec'
+
+export type StackKind = 'application' | 'system' | 'package'
