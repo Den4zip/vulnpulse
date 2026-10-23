@@ -1,0 +1,24 @@
+# Node
+node_modules/
+npm-debug.log*
+
+# Build output
+out/
+dist/
+
+# Vite/electron-vite cache
+.vite/
+*.local
+
+# Test
+playwright-report/
+test-results/
+coverage/
+
+# Env
+.env
+.env.*
+
+# OS
+Thumbs.db
+.DS_Store
