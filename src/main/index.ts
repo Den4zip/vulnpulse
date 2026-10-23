@@ -1,5 +1,6 @@
 import { app, BrowserWindow, shell } from 'electron'
 import { join } from 'path'
+import { DB_FILENAME, initDb } from './db'
 
 function createWindow(): void {
   const win = new BrowserWindow({
@@ -27,6 +28,9 @@ function createWindow(): void {
 }
 
 app.whenReady().then(() => {
+  const db = initDb(join(app.getPath('userData'), DB_FILENAME))
+  void db
+
   createWindow()
 
   app.on('activate', () => {
