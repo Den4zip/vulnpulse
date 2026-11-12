@@ -1,9 +1,7 @@
-export {}
+import type { ElectronAPI } from '../shared/api'
 
 declare global {
   interface Window {
-    electronAPI: {
-      ping: () => string
-    }
+    electronAPI: ElectronAPI
   }
 }

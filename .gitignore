@@ -19,6 +19,14 @@ coverage/
 .env
 .env.*
 
+# Local application data
+*.db
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite3
+*.vproj
+
 # OS
 Thumbs.db
 .DS_Store

@@ -3,6 +3,10 @@ import { matchCpe, parseCpe23, type CpeParts } from './cpe'
 import { matchPurl, parsePurl, type PackageIdentity, type Purl } from './purl'
 import { systemVersionEquals } from './normalizer'
 import { compareSemver } from './version'
+import { evaluateNvd } from './nvd'
+import type { ApplicabilityAssessment, NvdApplicability } from './nvd-types'
+import { evaluateOsv } from './osv'
+import type { OsvApplicability, OsvAssessment } from './osv-types'
 
 export type { PackageIdentity }
 
@@ -22,6 +26,8 @@ export interface VulnerabilityForMatch {
   extId: string
   cpes: string[]
   packages: PackageIdentity[]
+  nvdApplicability?: NvdApplicability
+  osvApplicability?: OsvApplicability
 }
 
 export type MatchSource = 'cpe' | 'purl'
@@ -33,6 +39,7 @@ export interface MatchResult extends MatchRecord {
 export interface MatchEngineResult {
   matches: MatchResult[]
   warnings: string[]
+  assessments: Array<ApplicabilityAssessment | OsvAssessment>
 }
 
 const CPE_CONFIDENCE = 1.0
@@ -50,6 +57,7 @@ interface StackEntry {
   itemId: number
   cpe: CpeParts | null
   purl: Purl | null
+  version: string | null
 }
 
 export function matchStack(
@@ -57,6 +65,7 @@ export function matchStack(
   vulnerabilities: readonly VulnerabilityForMatch[]
 ): MatchEngineResult {
   const warnings: string[] = []
+  const assessments: Array<ApplicabilityAssessment | OsvAssessment> = []
   const entries: StackEntry[] = []
 
   for (const item of stackItems) {
@@ -79,13 +88,12 @@ export function matchStack(
       }
     }
 
-    if (cpe !== null || purl !== null) {
-      entries.push({ itemId: item.id, cpe, purl })
-    } else {
+    if (cpe === null && purl === null) {
       warnings.push(
         `stack item ${item.id}: no parsable CPE or PURL (name: ${item.name}) — cannot match`
       )
     }
+    entries.push({ itemId: item.id, cpe, purl, version: item.version })
   }
 
   const pairConfidence = new Map<string, MatchResult>()
@@ -110,7 +118,24 @@ export function matchStack(
   }
 
   for (const vuln of vulnerabilities) {
-    for (const cpeUri of vuln.cpes) {
+    if (vuln.osvApplicability !== undefined) {
+      for (const entry of entries) {
+        const decision = evaluateOsv(vuln.osvApplicability, entry.purl, entry.version)
+        assessments.push({ ...decision, vulnerabilityId: vuln.id, stackId: entry.itemId,
+          source: 'osv', matcherVersion: 'osv-local-v1' })
+        if (decision.status === 'match') record(vuln.id, entry.itemId, 'purl', PURL_CONFIDENCE)
+      }
+    }
+    if (vuln.nvdApplicability !== undefined) {
+      for (const entry of entries) {
+        const decision = evaluateNvd(vuln.nvdApplicability, entry.cpe, entry.version)
+        assessments.push({ ...decision, vulnerabilityId: vuln.id, stackId: entry.itemId,
+          source: 'nvd', matcherVersion: 'nvd-cpe-v1' })
+        if (decision.status === 'match') record(vuln.id, entry.itemId, 'cpe', CPE_CONFIDENCE)
+      }
+    }
+    // A flat CPE list must never bypass an NVD configuration's restrictions.
+    for (const cpeUri of vuln.nvdApplicability === undefined ? vuln.cpes : []) {
       let vulnCpe: CpeParts
       try {
         vulnCpe = parseCpe23(cpeUri)
@@ -126,7 +151,7 @@ export function matchStack(
       }
     }
 
-    for (const identity of vuln.packages) {
+    for (const identity of vuln.osvApplicability === undefined ? vuln.packages : []) {
       for (const entry of entries) {
         if (entry.purl === null) continue
         if (matchPurl(entry.purl, identity, versionsEqual)) {
@@ -140,6 +165,7 @@ export function matchStack(
     matches: [...pairConfidence.values()].sort(
       (a, b) => b.confidence - a.confidence || a.stackId - b.stackId
     ),
-    warnings
+    warnings,
+    assessments
   }
 }
