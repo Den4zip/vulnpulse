@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "components": [
+    {
+      "kind": "package",
+      "name": "Демонстрационный npm-пакет lodash",
+      "product": "lodash",
+      "version": "4.17.20",
+      "purl": "pkg:npm/lodash@4.17.20"
+    },
+    {
+      "kind": "package",
+      "name": "Демонстрационный Python-пакет Django",
+      "product": "django",
+      "version": "4.2.0",
+      "purl": "pkg:pypi/django@4.2.0"
+    },
+    {
+      "kind": "package",
+      "name": "Демонстрационный Maven-пакет Log4j Core",
+      "product": "org.apache.logging.log4j:log4j-core",
+      "version": "2.14.1",
+      "purl": "pkg:maven/org.apache.logging.log4j/log4j-core@2.14.1"
+    },
+    {
+      "kind": "application",
+      "name": "Демонстрационный Apache HTTP Server",
+      "vendor": "apache",
+      "product": "http_server",
+      "version": "2.4.57",
+      "cpe23": "cpe:2.3:a:apache:http_server:2.4.57:*:*:*:*:*:*:*"
+    }
+  ]
+}

@@ -266,6 +266,6 @@ describe('matchStack — dedup & resilience', () => {
   })
 
   it('empty inputs produce empty output', () => {
-    expect(matchStack([], [])).toEqual({ matches: [], warnings: [] })
+    expect(matchStack([], [])).toEqual({ matches: [], warnings: [], assessments: [] })
   })
 })

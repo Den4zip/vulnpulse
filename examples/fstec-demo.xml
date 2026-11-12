@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Синтетический пример для проверки импорта. Не официальный экспорт БДУ.
+     BDU:0000-* — демонстрационные значения, не реальные идентификаторы уязвимостей. -->
+<vulnerabilities>
+  <vul>
+    <identifier>BDU:0000-00001</identifier>
+    <name>ДЕМОНСТРАЦИЯ: запись с описанием программного продукта</name>
+    <description>Синтетическая запись для проверки локального XML-импорта VulnPulse. Не описывает реальную уязвимость.</description>
+    <publication_date>06.11.2026</publication_date>
+    <last_upd_date>06.11.2026</last_upd_date>
+    <vulnerable_software>
+      <soft>
+        <vendor>Example Vendor</vendor>
+        <name>VulnPulse Demo Server</name>
+        <version>1.0.0</version>
+      </soft>
+    </vulnerable_software>
+  </vul>
+  <vul>
+    <identifier>BDU:0000-00002</identifier>
+    <name>ДЕМОНСТРАЦИЯ: запись с CDATA</name>
+    <description><![CDATA[Синтетический текст с символами < > & для проверки UTF-8 и CDATA. Это не реальная уязвимость.]]></description>
+    <publication_date>06.11.2026</publication_date>
+    <last_upd_date>06.11.2026</last_upd_date>
+  </vul>
+</vulnerabilities>

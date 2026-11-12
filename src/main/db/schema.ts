@@ -9,7 +9,8 @@ import {
   index,
   primaryKey,
   uniqueIndex,
-  check
+  check,
+  blob
 } from 'drizzle-orm/sqlite-core'
 
 export const feeds = sqliteTable('feeds', {
@@ -17,9 +18,24 @@ export const feeds = sqliteTable('feeds', {
   name: text('name').$type<FeedName>().notNull().unique(),
   source: text('source').notNull(),
   etag: text('etag'),
+  /** Adapter-owned, versioned checkpoint; never contains credentials. */
+  syncState: text('sync_state'),
   lastStartedAt: text('last_started_at'),
   lastFinishedAt: text('last_finished_at'),
   lastError: text('last_error')
+})
+
+export const settings = sqliteTable('settings', {
+  id: integer('id').primaryKey(),
+  revision: integer('revision').notNull().default(1),
+  valueJson: text('value_json').notNull()
+}, (table) => [check('settings_singleton', sql`${table.id} = 1`)])
+
+/** Only OS-encrypted bytes, never plaintext credentials or public DTO fields. */
+export const appSecrets = sqliteTable('app_secrets', {
+  name: text('name').primaryKey(),
+  ciphertext: blob('ciphertext', { mode: 'buffer' }),
+  revision: integer('revision').notNull().default(1)
 })
 
 export const vulnerabilities = sqliteTable(
@@ -68,6 +84,28 @@ export const vulnerabilityCpes = sqliteTable(
     index('idx_vulnerability_cpes_cpe23').on(table.cpe23)
   ]
 )
+
+/** Records from individual feeds, kept independently from the canonical CVE. */
+export const sourceRecords = sqliteTable('source_records', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  feedId: integer('feed_id').notNull().references(() => feeds.id, { onDelete: 'restrict' }),
+  sourceId: text('source_id').notNull(),
+  rawJson: text('raw_json'),
+  createdAt: text('created_at').notNull().default(sql`(datetime('now'))`)
+}, (table) => [
+  uniqueIndex('uq_source_records_feed_source').on(table.feedId, table.sourceId)
+])
+
+/** An advisory may identify multiple CVEs, and each CVE may have several sources. */
+export const vulnerabilitySources = sqliteTable('vulnerability_sources', {
+  vulnerabilityId: integer('vulnerability_id').notNull()
+    .references(() => vulnerabilities.id, { onDelete: 'cascade' }),
+  sourceRecordId: integer('source_record_id').notNull()
+    .references(() => sourceRecords.id, { onDelete: 'cascade' })
+}, (table) => [
+  primaryKey({ columns: [table.vulnerabilityId, table.sourceRecordId] }),
+  index('idx_vulnerability_sources_source').on(table.sourceRecordId)
+])
 
 export const stack = sqliteTable(
   'stack',
@@ -132,10 +170,11 @@ export const notes = sqliteTable('notes', {
     .notNull()
     .references(() => vulnerabilities.id, { onDelete: 'cascade' }),
   body: text('body').notNull(),
+  revision: integer('revision').notNull().default(1),
   createdAt: text('created_at')
     .notNull()
     .default(sql`(datetime('now'))`)
-})
+}, (table) => [index('idx_notes_vulnerability_id').on(table.vulnerabilityId, table.id)])
 
 export const sla = sqliteTable('sla', {
   id: integer('id').primaryKey({ autoIncrement: true }),
@@ -144,7 +183,8 @@ export const sla = sqliteTable('sla', {
     .unique()
     .references(() => vulnerabilities.id, { onDelete: 'cascade' }),
   dueAt: text('due_at').notNull(),
-  patchedAt: text('patched_at')
+  patchedAt: text('patched_at'),
+  revision: integer('revision').notNull().default(1)
 })
 
 export type FeedRow = typeof feeds.$inferSelect

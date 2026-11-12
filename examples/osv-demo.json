@@ -1,0 +1,49 @@
+[
+  {
+    "schema_version": "1.7.0",
+    "id": "DEMO-LOCAL-0001",
+    "modified": "2026-11-06T00:00:00Z",
+    "published": "2026-11-06T00:00:00Z",
+    "summary": "ДЕМОНСТРАЦИЯ: npm и диапазон SemVer",
+    "details": "Синтетическая запись для проверки импорта. Не реальная уязвимость. Демонстрационный пакет затронут с 1.0.0 до 1.2.0, не включая 1.2.0.",
+    "affected": [
+      {
+        "package": { "ecosystem": "npm", "name": "vulnpulse-demo-npm", "purl": "pkg:npm/vulnpulse-demo-npm" },
+        "ranges": [
+          { "type": "SEMVER", "events": [ { "introduced": "1.0.0" }, { "fixed": "1.2.0" } ] }
+        ]
+      }
+    ],
+    "database_specific": { "vulnpulse_demo": true }
+  },
+  {
+    "schema_version": "1.7.0",
+    "id": "DEMO-LOCAL-0002",
+    "modified": "2026-11-06T00:00:00Z",
+    "published": "2026-11-06T00:00:00Z",
+    "summary": "ДЕМОНСТРАЦИЯ: PyPI и точная версия",
+    "details": "Синтетическая запись, не реальная уязвимость. Для демонстрационного PyPI-пакета явно перечислена версия 2.0.0.",
+    "affected": [
+      {
+        "package": { "ecosystem": "PyPI", "name": "vulnpulse-demo-pypi", "purl": "pkg:pypi/vulnpulse-demo-pypi" },
+        "versions": ["2.0.0"]
+      }
+    ],
+    "database_specific": { "vulnpulse_demo": true }
+  },
+  {
+    "schema_version": "1.7.0",
+    "id": "DEMO-LOCAL-0003",
+    "modified": "2026-11-06T00:00:00Z",
+    "published": "2026-11-06T00:00:00Z",
+    "summary": "ДЕМОНСТРАЦИЯ: Maven и точная версия",
+    "details": "Синтетическая запись, не реальная уязвимость. Для демонстрационного Maven-пакета явно перечислена версия 3.0.0.",
+    "affected": [
+      {
+        "package": { "ecosystem": "Maven", "name": "org.example:vulnpulse-demo-java", "purl": "pkg:maven/org.example/vulnpulse-demo-java" },
+        "versions": ["3.0.0"]
+      }
+    ],
+    "database_specific": { "vulnpulse_demo": true }
+  }
+]

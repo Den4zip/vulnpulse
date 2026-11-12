@@ -6,7 +6,7 @@ import { applyMigrations } from './migrations/runner'
 
 export const DB_FILENAME = 'vulnpulse.db'
 
-export type Db = NodeSQLiteDatabase
+export type Db = NodeSQLiteDatabase & { $client: DatabaseSync }
 
 export function initDb(dbPath: string): Db {
   const client = new DatabaseSync(dbPath)
